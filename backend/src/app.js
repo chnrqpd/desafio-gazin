@@ -15,6 +15,8 @@ app.get('/health', (req, res) => {
 
 // Rotas da API
 app.use('/api/niveis', require('./routes/niveis'));
+app.use('/api/desenvolvedores', require('./routes/desenvolvedores'));
+app.use('/api/debug', require('./routes/debug'));
 
 
 module.exports = app;
