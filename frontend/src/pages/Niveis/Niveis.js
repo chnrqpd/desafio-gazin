@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { niveisService } from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import NivelForm from '../../components/NivelForm/NivelForm';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
-import Pagination from '../../components/Pagination/Pagination'; // ← NOVO IMPORT
+import Pagination from '../../components/Pagination/Pagination';
 import './Niveis.scss';
 
 const Niveis = () => {
@@ -28,36 +28,39 @@ const Niveis = () => {
   });
   const itemsPerPage = 10;
 
+  const fetchNiveis = useCallback(
+    async (term = '') => {
+      try {
+        setLoading(true);
+
+        const params = {
+          page: currentPage,
+          limit: itemsPerPage,
+          sort: sortField,
+          order: sortOrder,
+        };
+        if (term) {
+          params.search = term;
+        }
+
+        const response = await niveisService.getAll(params);
+        setNiveis(response.data.data);
+        setTotalPages(response.data.meta.last_page);
+        setTotalItems(response.data.meta.total);
+        setError(null);
+      } catch (err) {
+        setError('Erro ao carregar níveis');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentPage, sortField, sortOrder]
+  );
+
   useEffect(() => {
     fetchNiveis();
-  }, [currentPage, sortField, sortOrder]);
-
-  const fetchNiveis = async (term = '') => {
-    try {
-      setLoading(true);
-
-      const params = {
-        page: currentPage,
-        limit: itemsPerPage,
-        sort: sortField,
-        order: sortOrder,
-      };
-      if (term) {
-        params.search = term;
-      }
-
-      const response = await niveisService.getAll(params);
-      setNiveis(response.data.data);
-      setTotalPages(response.data.meta.last_page);
-      setTotalItems(response.data.meta.total);
-      setError(null);
-    } catch (err) {
-      setError('Erro ao carregar níveis');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchNiveis]);
 
   const handleSearch = (term) => {
     setSearchTerm(term);

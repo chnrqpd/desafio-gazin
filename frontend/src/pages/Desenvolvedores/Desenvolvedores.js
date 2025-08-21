@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { desenvolvedoresService } from '../../services/api';
 import DesenvolvedorForm from '../../components/DesenvolvedorForm/DesenvolvedorForm';
 import Modal from '../../components/Modal/Modal';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import Toast from '../../components/Toast/Toast';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
-import Pagination from '../../components/Pagination/Pagination'; // ← NOVO IMPORT
+import Pagination from '../../components/Pagination/Pagination';
 import useToast from '../../hooks/useToast';
 import './Desenvolvedores.scss';
 
@@ -30,37 +30,40 @@ const Desenvolvedores = () => {
   const itemsPerPage = 10;
   const { toast, showSuccess, showError, hideToast } = useToast();
 
+  const fetchDesenvolvedores = useCallback(
+    async (term = '') => {
+      try {
+        setLoading(true);
+
+        const params = {
+          page: currentPage,
+          limit: itemsPerPage,
+          sort: sortField,
+          order: sortOrder,
+        };
+
+        if (term) {
+          params.search = term;
+        }
+
+        const response = await desenvolvedoresService.getAll(params);
+        setDesenvolvedores(response.data.data);
+        setTotalPages(response.data.meta.last_page);
+        setTotalItems(response.data.meta.total);
+        setError(null);
+      } catch (err) {
+        setError('Erro ao carregar desenvolvedores');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentPage, sortField, sortOrder]
+  );
+
   useEffect(() => {
     fetchDesenvolvedores();
-  }, [currentPage, searchTerm, sortField, sortOrder]);
-
-  const fetchDesenvolvedores = async (term = '') => {
-    try {
-      setLoading(true);
-
-      const params = {
-        page: currentPage,
-        limit: itemsPerPage,
-        sort: sortField,
-        order: sortOrder,
-      };
-
-      if (term) {
-        params.search = term;
-      }
-
-      const response = await desenvolvedoresService.getAll(params);
-      setDesenvolvedores(response.data.data);
-      setTotalPages(response.data.meta.last_page);
-      setTotalItems(response.data.meta.total);
-      setError(null);
-    } catch (err) {
-      setError('Erro ao carregar desenvolvedores');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchDesenvolvedores]);
 
   const handleSearch = (term) => {
     setSearchTerm(term);
