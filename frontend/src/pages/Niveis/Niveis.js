@@ -1,22 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { niveisService } from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import NivelForm from '../../components/NivelForm/NivelForm';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import Pagination from '../../components/Pagination/Pagination';
+import usePagination from '../../hooks/usePagination';
 import './Niveis.scss';
 
 const Niveis = () => {
   const [niveis, setNiveis] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingNivel, setEditingNivel] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [sortField, setSortField] = useState('id');
   const [sortOrder, setSortOrder] = useState('asc');
   const [confirmDialog, setConfirmDialog] = useState({
@@ -26,53 +22,84 @@ const Niveis = () => {
     onConfirm: null,
     type: 'confirm',
   });
-  const itemsPerPage = 10;
 
-  const fetchNiveis = useCallback(
-    async (term = '') => {
-      try {
-        setLoading(true);
-
-        const params = {
-          page: currentPage,
-          limit: itemsPerPage,
-          sort: sortField,
-          order: sortOrder,
-        };
-        if (term) {
-          params.search = term;
-        }
-
-        const response = await niveisService.getAll(params);
-        setNiveis(response.data.data);
-        setTotalPages(response.data.meta.last_page);
-        setTotalItems(response.data.meta.total);
-        setError(null);
-      } catch (err) {
-        setError('Erro ao carregar níveis');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [currentPage, sortField, sortOrder]
-  );
+  const {
+    currentPage,
+    totalPages,
+    totalItems,
+    loading,
+    error,
+    fetchData,
+    handlePageChange,
+    handleSearch: paginationHandleSearch,
+    handleSort: paginationHandleSort,
+    checkAndFixEmptyPage,
+  } = usePagination({
+    initialPage: 1,
+    itemsPerPage: 10,
+    onDataFetch: niveisService.getAll,
+  });
 
   useEffect(() => {
-    fetchNiveis();
-  }, [fetchNiveis]);
+    const loadData = async () => {
+      try {
+        const response = await fetchData({
+          sort: sortField,
+          order: sortOrder,
+        });
+        setNiveis(response.data.data);
+      } catch (err) {
+        console.error('Erro ao carregar níveis:', err);
+      }
+    };
 
-  const handleSearch = (term) => {
+    loadData();
+  }, [fetchData, sortField, sortOrder]);
+
+  const handleSearch = async (term) => {
     setSearchTerm(term);
-    setCurrentPage(1);
-    fetchNiveis(term);
+    try {
+      const response = await paginationHandleSearch({
+        search: term,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setNiveis(response.data.data);
+    } catch (err) {
+      console.error('Erro na busca:', err);
+    }
   };
 
-  const handleSort = (field) => {
+  const handleSort = async (field) => {
     const newOrder =
       sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
     setSortField(field);
     setSortOrder(newOrder);
+
+    try {
+      const response = await paginationHandleSort({
+        search: searchTerm,
+        sort: field,
+        order: newOrder,
+      });
+      setNiveis(response.data.data);
+    } catch (err) {
+      console.error('Erro na ordenação:', err);
+    }
+  };
+
+  const onPageChange = async (page) => {
+    handlePageChange(page);
+    try {
+      const response = await fetchData({
+        search: searchTerm,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setNiveis(response.data.data);
+    } catch (err) {
+      console.error('Erro ao mudar página:', err);
+    }
   };
 
   const handleAddNivel = () => {
@@ -98,7 +125,12 @@ const Niveis = () => {
         await niveisService.create(formData);
       }
 
-      await fetchNiveis(searchTerm);
+      const response = await fetchData({
+        search: searchTerm,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setNiveis(response.data.data);
       handleCloseModal();
     } catch (err) {
       console.error('Erro ao salvar nível:', err);
@@ -129,7 +161,20 @@ const Niveis = () => {
   const confirmDeleteNivel = async (nivel) => {
     try {
       await niveisService.delete(nivel.id);
-      await fetchNiveis(searchTerm);
+
+      const remainingItems = niveis.length - 1;
+      const correctedPage = checkAndFixEmptyPage(remainingItems);
+
+      if (correctedPage !== currentPage) {
+        handlePageChange(correctedPage);
+      }
+
+      const response = await fetchData({
+        search: searchTerm,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setNiveis(response.data.data);
     } catch (err) {
       console.error('Erro ao excluir nível:', err);
       alert('Erro ao excluir nível. Tente novamente.');
@@ -151,10 +196,6 @@ const Niveis = () => {
       onConfirm: null,
       type: 'confirm',
     });
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
   };
 
   if (loading) return <div className="loading">Carregando...</div>;
@@ -245,7 +286,7 @@ const Niveis = () => {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={handlePageChange}
+        onPageChange={onPageChange}
         disabled={loading}
       />
 

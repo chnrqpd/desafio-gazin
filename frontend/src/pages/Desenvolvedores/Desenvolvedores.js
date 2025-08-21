@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { desenvolvedoresService } from '../../services/api';
 import DesenvolvedorForm from '../../components/DesenvolvedorForm/DesenvolvedorForm';
 import Modal from '../../components/Modal/Modal';
@@ -6,19 +6,15 @@ import SearchBar from '../../components/SearchBar/SearchBar';
 import Toast from '../../components/Toast/Toast';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import Pagination from '../../components/Pagination/Pagination';
+import usePagination from '../../hooks/usePagination';
 import useToast from '../../hooks/useToast';
 import './Desenvolvedores.scss';
 
 const Desenvolvedores = () => {
   const [desenvolvedores, setDesenvolvedores] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingDesenvolvedor, setEditingDesenvolvedor] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [sortField, setSortField] = useState('id');
   const [sortOrder, setSortOrder] = useState('asc');
   const [confirmDialog, setConfirmDialog] = useState({
@@ -27,56 +23,85 @@ const Desenvolvedores = () => {
     message: '',
     onConfirm: null,
   });
-  const itemsPerPage = 10;
   const { toast, showSuccess, showError, hideToast } = useToast();
 
-  const fetchDesenvolvedores = useCallback(
-    async (term = '') => {
-      try {
-        setLoading(true);
-
-        const params = {
-          page: currentPage,
-          limit: itemsPerPage,
-          sort: sortField,
-          order: sortOrder,
-        };
-
-        if (term) {
-          params.search = term;
-        }
-
-        const response = await desenvolvedoresService.getAll(params);
-        setDesenvolvedores(response.data.data);
-        setTotalPages(response.data.meta.last_page);
-        setTotalItems(response.data.meta.total);
-        setError(null);
-      } catch (err) {
-        setError('Erro ao carregar desenvolvedores');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [currentPage, sortField, sortOrder]
-  );
+  const {
+    currentPage,
+    totalPages,
+    totalItems,
+    loading,
+    error,
+    fetchData,
+    handlePageChange,
+    handleSearch: paginationHandleSearch,
+    handleSort: paginationHandleSort,
+    checkAndFixEmptyPage,
+  } = usePagination({
+    initialPage: 1,
+    itemsPerPage: 10,
+    onDataFetch: desenvolvedoresService.getAll,
+  });
 
   useEffect(() => {
-    fetchDesenvolvedores();
-  }, [fetchDesenvolvedores]);
+    const loadData = async () => {
+      try {
+        const response = await fetchData({
+          sort: sortField,
+          order: sortOrder,
+        });
+        setDesenvolvedores(response.data.data);
+      } catch (err) {
+        console.error('Erro ao carregar desenvolvedores:', err);
+      }
+    };
 
-  const handleSearch = (term) => {
+    loadData();
+  }, [fetchData, sortField, sortOrder]);
+
+  const handleSearch = async (term) => {
     setSearchTerm(term);
-    setCurrentPage(1);
-    fetchDesenvolvedores(term);
+    try {
+      const response = await paginationHandleSearch({
+        search: term,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setDesenvolvedores(response.data.data);
+    } catch (err) {
+      console.error('Erro na busca:', err);
+    }
   };
 
-  const handleSort = (field) => {
+  const handleSort = async (field) => {
     const newOrder =
       sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
     setSortField(field);
     setSortOrder(newOrder);
-    setCurrentPage(1);
+
+    try {
+      const response = await paginationHandleSort({
+        search: searchTerm,
+        sort: field,
+        order: newOrder,
+      });
+      setDesenvolvedores(response.data.data);
+    } catch (err) {
+      console.error('Erro na ordenação:', err);
+    }
+  };
+
+  const onPageChange = async (page) => {
+    handlePageChange(page);
+    try {
+      const response = await fetchData({
+        search: searchTerm,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setDesenvolvedores(response.data.data);
+    } catch (err) {
+      console.error('Erro ao mudar página:', err);
+    }
   };
 
   const handleAddDesenvolvedor = () => {
@@ -104,7 +129,12 @@ const Desenvolvedores = () => {
         showSuccess('Desenvolvedor criado com sucesso!');
       }
 
-      await fetchDesenvolvedores(searchTerm);
+      const response = await fetchData({
+        search: searchTerm,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setDesenvolvedores(response.data.data);
       handleCloseModal();
     } catch (err) {
       console.error('Erro ao salvar desenvolvedor:', err);
@@ -127,11 +157,19 @@ const Desenvolvedores = () => {
       await desenvolvedoresService.delete(desenvolvedor.id);
       showSuccess('Desenvolvedor excluído com sucesso!');
 
-      if (desenvolvedores.length === 1 && currentPage > 1) {
-        setCurrentPage((prev) => prev - 1);
-      } else {
-        await fetchDesenvolvedores(searchTerm);
+      const remainingItems = desenvolvedores.length - 1;
+      const correctedPage = checkAndFixEmptyPage(remainingItems);
+
+      if (correctedPage !== currentPage) {
+        handlePageChange(correctedPage);
       }
+
+      const response = await fetchData({
+        search: searchTerm,
+        sort: sortField,
+        order: sortOrder,
+      });
+      setDesenvolvedores(response.data.data);
     } catch (err) {
       console.error('Erro ao excluir desenvolvedor:', err);
       showError('Erro ao excluir desenvolvedor. Tente novamente.');
@@ -152,10 +190,6 @@ const Desenvolvedores = () => {
       message: '',
       onConfirm: null,
     });
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
   };
 
   if (loading) return <div className="loading">Carregando...</div>;
@@ -285,7 +319,7 @@ const Desenvolvedores = () => {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={handlePageChange}
+        onPageChange={onPageChange}
         disabled={loading}
       />
 
