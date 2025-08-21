@@ -1,0 +1,121 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.niveis {
+  .header {
+    @include flex-between;
+    margin-bottom: $spacing-xl;
+    padding: $spacing-lg; // Adicionar padding interno
+    background-color: $primary-color;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    
+    h1 {
+      color: white; // Mudar para branco
+      margin: 0;
+    }
+    
+    .btn-add {
+      background-color: $success-color;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      font-weight: 600;
+      
+      &:hover {
+        background-color: darken($success-color, 10%);
+        opacity: 1;
+      }
+      
+      &::before {
+        content: '+';
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .loading, .error {
+    text-align: center;
+    padding: $spacing-xl;
+    font-size: 1.1rem;
+  }
+
+  .error {
+    color: $danger-color;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+  }
+
+  .table-container {
+    @include card;
+    padding: 0;
+    overflow-x: auto;
+    border-radius: 0 0 8px 8px; // Arredondar apenas as bordas inferiores
+    margin-top: 0; // Colar com o header
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th, td {
+      padding: $spacing-md;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: $secondary-color;
+    }
+    
+    tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+    
+    td {
+      &:last-child {
+        .btn {
+          margin-right: $spacing-xs;
+          
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .btn-sm {
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.875rem;
+  }
+
+  .search-indicator {
+    text-align: center;
+    padding: $spacing-sm;
+    color: $primary-color;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  @include mobile {
+    .header {
+      flex-direction: column;
+      gap: $spacing-md;
+      align-items: flex-start;
+    }
+    
+    .table-container {
+      overflow-x: scroll;
+    }
+    
+    .table {
+      min-width: 600px;
+    }
+  }
+}
