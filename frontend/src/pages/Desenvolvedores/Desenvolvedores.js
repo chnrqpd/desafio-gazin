@@ -5,6 +5,7 @@ import Modal from '../../components/Modal/Modal';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import Toast from '../../components/Toast/Toast';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
+import Pagination from '../../components/Pagination/Pagination'; // ← NOVO IMPORT
 import useToast from '../../hooks/useToast';
 import './Desenvolvedores.scss';
 
@@ -143,77 +144,6 @@ const Desenvolvedores = () => {
     setCurrentPage(page);
   };
 
-  const renderPagination = () => {
-    if (totalPages <= 1) return null;
-
-    const pages = [];
-    const maxPagesToShow = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-    if (endPage - startPage + 1 < maxPagesToShow) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    return (
-      <div className="pagination">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="btn btn-sm btn-secondary"
-        >
-          Anterior
-        </button>
-
-        {startPage > 1 && (
-          <>
-            <button
-              onClick={() => handlePageChange(1)}
-              className="btn btn-sm btn-secondary"
-            >
-              1
-            </button>
-            {startPage > 2 && <span className="pagination-ellipsis">...</span>}
-          </>
-        )}
-
-        {pages.map(page => (
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`btn btn-sm ${currentPage === page ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            {page}
-          </button>
-        ))}
-
-        {endPage < totalPages && (
-          <>
-            {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              className="btn btn-sm btn-secondary"
-            >
-              {totalPages}
-            </button>
-          </>
-        )}
-
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="btn btn-sm btn-secondary"
-        >
-          Próxima
-        </button>
-      </div>
-    );
-  };
-
   if (loading) return <div className="loading">Carregando...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -303,7 +233,12 @@ const Desenvolvedores = () => {
         </table>
       </div>
 
-      {renderPagination()}
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        disabled={loading}
+      />
 
       <Modal
         isOpen={modalOpen}
