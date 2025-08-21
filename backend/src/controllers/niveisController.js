@@ -3,14 +3,39 @@ const { Nivel, Desenvolvedor } = require('../../models');
 const niveisController = {
     async index(req, res) {
         try {
-            const niveis = await Nivel.findAll({
-                order: [['id', 'ASC']]
-            });
+            const { page, limit, offset } = req.pagination || {};
+            
+            let result;
 
-            res.json({
-                success: true,
-                data: niveis
-            });
+            if (page && limit) {
+                result = await Nivel.findAndCountAll({
+                    order: [['id', 'ASC']],
+                    limit,
+                    offset
+                });
+
+                const totalPages = Math.ceil(result.count / limit);
+
+                res.json({
+                    success: true,
+                    data: result.rows,
+                    meta: {
+                        total: result.count,
+                        per_page: limit,
+                        current_page: page,
+                        last_page: totalPages
+                    }
+                });
+            } else {
+                const niveis = await Nivel.findAll({
+                    order: [['id', 'ASC']]
+                });
+
+                res.json({
+                    success: true,
+                    data: niveis
+                });
+            }
         } catch (error) {
             console.error('Erro ao buscar níveis:', error);
             res.status(500).json({

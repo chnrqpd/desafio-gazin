@@ -4,19 +4,49 @@ const desenvolvedoresController = {
 
   async index(req, res) {
     try {
-      const desenvolvedores = await Desenvolvedor.findAll({
-        include: [{
-          model: Nivel,
-          as: 'nivel',
-          attributes: ['id', 'nivel']
-        }],
-        order: [['id', 'ASC']]
-      });
-      
-      res.json({
-        success: true,
-        data: desenvolvedores
-      });
+        const { page, limit, offset } = req.pagination || {};
+        
+        let result;
+
+        if (page && limit) {
+            result = await Desenvolvedor.findAndCountAll({
+                include: [{
+                    model: Nivel,
+                    as: 'nivel',
+                    attributes: ['id', 'nivel']
+                }],
+                order: [['id', 'ASC']],
+                limit,
+                offset
+            });
+
+            const totalPages = Math.ceil(result.count / limit);
+
+            res.json({
+                success: true,
+                data: result.rows,
+                meta: {
+                    total: result.count,
+                    per_page: limit,
+                    current_page: page,
+                    last_page: totalPages
+                }
+            });
+        } else {
+            const desenvolvedores = await Desenvolvedor.findAll({
+                include: [{
+                    model: Nivel,
+                    ass: 'nivel',
+                    attributes: ['id', 'nivel']
+                }],
+                order: [['id', 'ASC']]
+            });
+
+            res.json({
+                success: true,
+                data: desenvolvedores
+            });
+        }
     } catch (error) {
       console.error('Erro ao buscar desenvolvedores:', error);
       res.status(500).json({
