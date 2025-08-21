@@ -1,8 +1,200 @@
 @import '../../styles/variables';
+@import '../../styles/mixins';
 
 .desenvolvedores {
-  h1 {
-    color: $primary-color;
-    margin-bottom: $spacing-md;
+  .header {
+    @include flex-between;
+    margin-bottom: $spacing-xl;
+    padding: $spacing-lg;
+    background-color: $primary-color;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    
+    h1 {
+      color: white;
+      margin: 0;
+    }
+    
+    .btn-add {
+      background-color: $success-color;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      font-weight: 600;
+      
+      &:hover {
+        background-color: darken($success-color, 10%);
+        opacity: 1;
+      }
+      
+      &::before {
+        content: '+';
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+    }
+  }
+  
+  .table-container {
+    @include card;
+    padding: 0;
+    overflow-x: auto;
+    border-radius: 0 0 8px 8px;
+    margin-top: 0;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th, td {
+      padding: $spacing-md;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: $secondary-color;
+    }
+    
+    tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+    
+    td {
+      &:first-child {
+        font-weight: 600;
+        color: $primary-color;
+      }
+      
+      &:last-child {
+        .btn {
+          margin-right: $spacing-xs;
+          
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .btn {
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 0.5rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &.btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    &.btn-secondary {
+      background: #6c757d;
+      color: white;
+
+      &:hover {
+        background: #545b62;
+      }
+    }
+
+    &.btn-danger {
+      background: #dc3545;
+      color: white;
+
+      &:hover {
+        background: #c82333;
+      }
+    }
+  }
+
+  .loading,
+  .error {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+  }
+
+  .loading {
+    color: #6c757d;
+  }
+
+  .error {
+    color: #dc3545;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    margin: 2rem 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .desenvolvedores {
+    padding: 1rem;
+
+    .table-container {
+      overflow-x: auto;
+      
+      .table {
+        min-width: 800px; // Força scroll horizontal em telas menores
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .desenvolvedores {
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+
+      .btn-add {
+        width: 100%;
+      }
+    }
+
+    .table-container {
+      .table {
+        font-size: 0.8rem;
+        min-width: 700px;
+
+        th,
+        td {
+          padding: 0.5rem 0.375rem;
+        }
+        th:nth-child(4), td:nth-child(4), 
+        th:nth-child(6), td:nth-child(6) 
+        {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .desenvolvedores {
+    .table-container {
+      .table {
+        th:nth-child(3), td:nth-child(3),
+        th:nth-child(7), td:nth-child(7) 
+        {
+          display: none;
+        }
+      }
+    }
   }
 }

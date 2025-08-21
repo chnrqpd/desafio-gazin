@@ -1,0 +1,53 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.desenvolvedor-form {
+  .form-group {
+    margin-bottom: $spacing-lg;
+    
+    label {
+      display: block;
+      margin-bottom: $spacing-xs;
+      font-weight: 600;
+      color: $secondary-color;
+    }
+    
+    input,
+    select {
+      width: 100%;
+      padding: $spacing-sm;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 1rem;
+      
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      }
+      
+      &:disabled {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+      }
+    }
+    
+    select {
+      cursor: pointer;
+      background-color: white;
+      
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+  
+  .form-actions {
+    @include flex-between;
+    gap: $spacing-md;
+    
+    .btn {
+      flex: 1;
+    }
+  }
+}

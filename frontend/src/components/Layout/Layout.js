@@ -10,7 +10,7 @@ const Layout = ({ children }) => {
       <header className="header">
         <div className="container">
           <h1 className="logo">
-            <Link to="/">Developers API</Link>
+            <Link to="/">Gerenciamento de Desenvolvedores</Link>
           </h1>
           <nav className="nav">
             <Link 
