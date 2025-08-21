@@ -383,7 +383,7 @@ Este projeto foi desenvolvido seguindo as especificações do desafio técnico d
 
 ## 👨‍💻 Desenvolvedor
 
-Desenvolvido por [Seu Nome] como parte do processo seletivo da Gazin Tech.
+Desenvolvido por Caio Henrique Primo Dario como parte do processo seletivo da Gazin Tech.
 
 ---
 
