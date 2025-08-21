@@ -3,7 +3,7 @@ import './NivelForm.scss';
 
 const NivelForm = ({ nivel, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    nivel: ''
+    nivel: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +28,7 @@ const NivelForm = ({ nivel, onSubmit, onCancel }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -49,20 +49,20 @@ const NivelForm = ({ nivel, onSubmit, onCancel }) => {
       </div>
 
       <div className="form-actions">
-        <button 
-          type="button" 
-          className="btn btn-secondary" 
+        <button
+          type="button"
+          className="btn btn-secondary"
           onClick={onCancel}
           disabled={loading}
         >
           Cancelar
         </button>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="btn btn-primary"
           disabled={loading || !formData.nivel.trim()}
         >
-          {loading ? 'Salvando...' : (nivel ? 'Atualizar' : 'Criar')}
+          {loading ? 'Salvando...' : nivel ? 'Atualizar' : 'Criar'}
         </button>
       </div>
     </form>

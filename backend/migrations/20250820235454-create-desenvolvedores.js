@@ -2,53 +2,52 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('desenvolvedores', {
       id: {
-        type: Sequelize.INTEGER,  
+        type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
       },
       nivel_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'niveis',
-          key: 'id'
+          key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
+        onDelete: 'RESTRICT',
       },
       nome: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       sexo: {
         type: Sequelize.CHAR(1),
-        allowNull: false
+        allowNull: false,
       },
       data_nascimento: {
         type: Sequelize.DATEONLY,
-        allowNull: false
+        allowNull: false,
       },
       hobby: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       createdAt: {
-        type: Sequelize.DATE,        
-        allowNull: false
-      
+        type: Sequelize.DATE,
+        allowNull: false,
       },
       updatedAt: {
         type: Sequelize.DATE,
-        allowNull: false
-      }
+        allowNull: false,
+      },
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('desenvolvedores');
-  }
+  },
 };

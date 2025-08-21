@@ -1,11 +1,11 @@
 import './Pagination.scss';
 
-const Pagination = ({ 
-  currentPage, 
-  totalPages, 
-  onPageChange, 
+const Pagination = ({
+  currentPage,
+  totalPages,
+  onPageChange,
   disabled = false,
-  maxPagesToShow = 5 
+  maxPagesToShow = 5,
 }) => {
   if (totalPages <= 1) return null;
 
@@ -15,7 +15,7 @@ const Pagination = ({
     }
     onPageChange(page);
   };
-  
+
   const getVisiblePages = () => {
     const pages = [];
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
@@ -57,7 +57,7 @@ const Pagination = ({
         </>
       )}
 
-      {pages.map(page => (
+      {pages.map((page) => (
         <button
           key={page}
           onClick={() => handlePageChange(page)}
@@ -70,7 +70,9 @@ const Pagination = ({
 
       {endPage < totalPages && (
         <>
-          {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
+          {endPage < totalPages - 1 && (
+            <span className="pagination-ellipsis">...</span>
+          )}
           <button
             onClick={() => handlePageChange(totalPages)}
             disabled={disabled}

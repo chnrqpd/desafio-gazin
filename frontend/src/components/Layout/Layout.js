@@ -13,26 +13,26 @@ const Layout = ({ children }) => {
             <Link to="/">Gerenciamento de Desenvolvedores</Link>
           </h1>
           <nav className="nav">
-            <Link 
-              to="/niveis" 
+            <Link
+              to="/niveis"
               className={location.pathname === '/niveis' ? 'active' : ''}
             >
               Níveis
             </Link>
-            <Link 
+            <Link
               to="/desenvolvedores"
-              className={location.pathname === '/desenvolvedores' ? 'active' : ''}
+              className={
+                location.pathname === '/desenvolvedores' ? 'active' : ''
+              }
             >
               Desenvolvedores
             </Link>
           </nav>
         </div>
       </header>
-      
+
       <main className="main">
-        <div className="container">
-          {children}
-        </div>
+        <div className="container">{children}</div>
       </main>
     </div>
   );

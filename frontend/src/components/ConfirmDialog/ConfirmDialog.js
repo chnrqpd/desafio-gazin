@@ -1,7 +1,14 @@
 import React from 'react';
 import './ConfirmDialog.scss';
 
-const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, type = 'confirm' }) => {
+const ConfirmDialog = ({
+  isOpen,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  type = 'confirm',
+}) => {
   if (!isOpen) return null;
 
   const isInfoType = type === 'info';
@@ -17,24 +24,15 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, type = 'co
         </div>
         <div className="confirm-actions">
           {isInfoType ? (
-            <button 
-              className="btn btn-primary" 
-              onClick={onConfirm}
-            >
+            <button className="btn btn-primary" onClick={onConfirm}>
               Entendi
             </button>
           ) : (
             <>
-              <button 
-                className="btn btn-secondary" 
-                onClick={onCancel}
-              >
+              <button className="btn btn-secondary" onClick={onCancel}>
                 Cancelar
               </button>
-              <button 
-                className="btn btn-danger" 
-                onClick={onConfirm}
-              >
+              <button className="btn btn-danger" onClick={onConfirm}>
                 Excluir
               </button>
             </>

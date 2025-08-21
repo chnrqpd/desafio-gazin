@@ -8,7 +8,7 @@ const DesenvolvedorForm = ({ desenvolvedor, onSubmit, onCancel }) => {
     sexo: '',
     data_nascimento: '',
     hobby: '',
-    nivel_id: ''
+    nivel_id: '',
   });
   const [niveis, setNiveis] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ const DesenvolvedorForm = ({ desenvolvedor, onSubmit, onCancel }) => {
         sexo: desenvolvedor.sexo || '',
         data_nascimento: desenvolvedor.data_nascimento || '',
         hobby: desenvolvedor.hobby || '',
-        nivel_id: desenvolvedor.nivel_id || ''
+        nivel_id: desenvolvedor.nivel_id || '',
       });
     }
   }, [desenvolvedor]);
@@ -37,8 +37,14 @@ const DesenvolvedorForm = ({ desenvolvedor, onSubmit, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.nome.trim() || !formData.sexo || !formData.data_nascimento || 
-        !formData.hobby.trim() || !formData.nivel_id) return;
+    if (
+      !formData.nome.trim() ||
+      !formData.sexo ||
+      !formData.data_nascimento ||
+      !formData.hobby.trim() ||
+      !formData.nivel_id
+    )
+      return;
 
     setLoading(true);
     try {
@@ -51,13 +57,16 @@ const DesenvolvedorForm = ({ desenvolvedor, onSubmit, onCancel }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const isFormValid = formData.nome.trim() && formData.sexo && 
-                     formData.data_nascimento && formData.hobby.trim() && 
-                     formData.nivel_id;
+  const isFormValid =
+    formData.nome.trim() &&
+    formData.sexo &&
+    formData.data_nascimento &&
+    formData.hobby.trim() &&
+    formData.nivel_id;
 
   return (
     <form onSubmit={handleSubmit} className="desenvolvedor-form">
@@ -129,7 +138,7 @@ const DesenvolvedorForm = ({ desenvolvedor, onSubmit, onCancel }) => {
           disabled={loading}
         >
           <option value="">Selecione o nível</option>
-          {niveis.map(nivel => (
+          {niveis.map((nivel) => (
             <option key={nivel.id} value={nivel.id}>
               {nivel.nivel}
             </option>
@@ -138,20 +147,20 @@ const DesenvolvedorForm = ({ desenvolvedor, onSubmit, onCancel }) => {
       </div>
 
       <div className="form-actions">
-        <button 
-          type="button" 
-          className="btn btn-secondary" 
+        <button
+          type="button"
+          className="btn btn-secondary"
           onClick={onCancel}
           disabled={loading}
         >
           Cancelar
         </button>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="btn btn-primary"
           disabled={loading || !isFormValid}
         >
-          {loading ? 'Salvando...' : (desenvolvedor ? 'Atualizar' : 'Criar')}
+          {loading ? 'Salvando...' : desenvolvedor ? 'Atualizar' : 'Criar'}
         </button>
       </div>
     </form>

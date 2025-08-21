@@ -24,7 +24,7 @@ const Niveis = () => {
     title: '',
     message: '',
     onConfirm: null,
-    type: 'confirm'
+    type: 'confirm',
   });
   const itemsPerPage = 10;
 
@@ -40,12 +40,12 @@ const Niveis = () => {
         page: currentPage,
         limit: itemsPerPage,
         sort: sortField,
-        order: sortOrder
+        order: sortOrder,
       };
       if (term) {
         params.search = term;
       }
-      
+
       const response = await niveisService.getAll(params);
       setNiveis(response.data.data);
       setTotalPages(response.data.meta.last_page);
@@ -62,11 +62,12 @@ const Niveis = () => {
   const handleSearch = (term) => {
     setSearchTerm(term);
     setCurrentPage(1);
-    fetchNiveis(term); 
+    fetchNiveis(term);
   };
 
   const handleSort = (field) => {
-    const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newOrder =
+      sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
     setSortField(field);
     setSortOrder(newOrder);
   };
@@ -93,7 +94,7 @@ const Niveis = () => {
       } else {
         await niveisService.create(formData);
       }
-      
+
       await fetchNiveis(searchTerm);
       handleCloseModal();
     } catch (err) {
@@ -109,7 +110,7 @@ const Niveis = () => {
         title: 'Não é possível excluir',
         message: `Não é possível excluir um nível que possui desenvolvedores associados. O nível "${nivel.nivel}" possui ${nivel.total_desenvolvedores} desenvolvedor(es) associado(s).`,
         onConfirm: () => handleCloseConfirmDialog(),
-        type: 'info'
+        type: 'info',
       });
       return;
     }
@@ -118,10 +119,10 @@ const Niveis = () => {
       isOpen: true,
       title: 'Confirmar Exclusão',
       message: `Tem certeza que deseja excluir o nível "${nivel.nivel}"? Esta ação não pode ser desfeita.`,
-      onConfirm: () => confirmDeleteNivel(nivel)
+      onConfirm: () => confirmDeleteNivel(nivel),
     });
   };
-  
+
   const confirmDeleteNivel = async (nivel) => {
     try {
       await niveisService.delete(nivel.id);
@@ -130,19 +131,28 @@ const Niveis = () => {
       console.error('Erro ao excluir nível:', err);
       alert('Erro ao excluir nível. Tente novamente.');
     } finally {
-      setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+      setConfirmDialog({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: null,
+      });
     }
   };
 
   const handleCloseConfirmDialog = () => {
-    setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null, type: 'confirm' });
+    setConfirmDialog({
+      isOpen: false,
+      title: '',
+      message: '',
+      onConfirm: null,
+      type: 'confirm',
+    });
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
-  // ← REMOVER TODA A FUNÇÃO renderPagination() daqui
 
   if (loading) return <div className="loading">Carregando...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -173,11 +183,18 @@ const Niveis = () => {
         <table className="table">
           <thead>
             <tr>
-              <th onClick={() => handleSort('id')} style={{cursor: 'pointer'}}>
+              <th
+                onClick={() => handleSort('id')}
+                style={{ cursor: 'pointer' }}
+              >
                 ID {sortField === 'id' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th onClick={() => handleSort('nivel')} style={{cursor: 'pointer'}}>
-                Nível {sortField === 'nivel' && (sortOrder === 'asc' ? '↑' : '↓')}
+              <th
+                onClick={() => handleSort('nivel')}
+                style={{ cursor: 'pointer' }}
+              >
+                Nível{' '}
+                {sortField === 'nivel' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
               <th>Desenvolvedores</th>
               <th>Ações</th>
@@ -186,24 +203,29 @@ const Niveis = () => {
           <tbody>
             {niveis.length === 0 ? (
               <tr>
-                <td colSpan="4" style={{ textAlign: 'center', padding: '2rem' }}>
-                  {searchTerm ? 'Nenhum nível encontrado para sua busca' : 'Nenhum nível cadastrado'}
+                <td
+                  colSpan="4"
+                  style={{ textAlign: 'center', padding: '2rem' }}
+                >
+                  {searchTerm
+                    ? 'Nenhum nível encontrado para sua busca'
+                    : 'Nenhum nível cadastrado'}
                 </td>
               </tr>
             ) : (
-              niveis.map(nivel => (
+              niveis.map((nivel) => (
                 <tr key={nivel.id}>
                   <td>{nivel.id}</td>
                   <td>{nivel.nivel}</td>
                   <td>{nivel.total_desenvolvedores || 0}</td>
                   <td>
-                    <button 
+                    <button
                       className="btn btn-secondary btn-sm"
                       onClick={() => handleEditNivel(nivel)}
                     >
                       Editar
                     </button>
-                    <button 
+                    <button
                       className="btn btn-danger btn-sm"
                       onClick={() => handleDeleteNivel(nivel)}
                     >
@@ -217,8 +239,7 @@ const Niveis = () => {
         </table>
       </div>
 
-      {/* ← SUBSTITUIR {renderPagination()} por: */}
-      <Pagination 
+      <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}

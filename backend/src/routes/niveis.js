@@ -1,6 +1,9 @@
 const express = require('express');
 const niveisController = require('../controllers/niveisController');
-const { validateNivel, validateId } = require('../middlewares/validationMiddleware');
+const {
+  validateNivel,
+  validateId,
+} = require('../middlewares/validationMiddleware');
 const paginationMiddleware = require('../middlewares/paginationMiddleware');
 
 const router = express.Router();

@@ -8,7 +8,7 @@ const Home = () => {
       <div className="hero">
         <h1>Sistema de Gerenciamento de Desenvolvedores</h1>
         <p>Gerencie níveis e desenvolvedores de forma simples e eficiente</p>
-        
+
         <div className="actions">
           <Link to="/niveis" className="btn btn-primary">
             Gerenciar Níveis

@@ -25,7 +25,7 @@ const Desenvolvedores = () => {
     isOpen: false,
     title: '',
     message: '',
-    onConfirm: null
+    onConfirm: null,
   });
   const itemsPerPage = 10;
   const { toast, showSuccess, showError, hideToast } = useToast();
@@ -42,13 +42,13 @@ const Desenvolvedores = () => {
         page: currentPage,
         limit: itemsPerPage,
         sort: sortField,
-        order: sortOrder
+        order: sortOrder,
       };
-      
+
       if (term) {
         params.search = term;
       }
-      
+
       const response = await desenvolvedoresService.getAll(params);
       setDesenvolvedores(response.data.data);
       setTotalPages(response.data.meta.last_page);
@@ -65,11 +65,12 @@ const Desenvolvedores = () => {
   const handleSearch = (term) => {
     setSearchTerm(term);
     setCurrentPage(1);
-    fetchDesenvolvedores(term); 
+    fetchDesenvolvedores(term);
   };
 
   const handleSort = (field) => {
-    const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newOrder =
+      sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
     setSortField(field);
     setSortOrder(newOrder);
     setCurrentPage(1);
@@ -99,7 +100,7 @@ const Desenvolvedores = () => {
         await desenvolvedoresService.create(formData);
         showSuccess('Desenvolvedor criado com sucesso!');
       }
-      
+
       await fetchDesenvolvedores(searchTerm);
       handleCloseModal();
     } catch (err) {
@@ -114,7 +115,7 @@ const Desenvolvedores = () => {
       isOpen: true,
       title: 'Confirmar Exclusão',
       message: `Tem certeza que deseja excluir o desenvolvedor "${desenvolvedor.nome}"? Esta ação não pode ser desfeita.`,
-      onConfirm: () => confirmDeleteDesenvolvedor(desenvolvedor)
+      onConfirm: () => confirmDeleteDesenvolvedor(desenvolvedor),
     });
   };
 
@@ -122,9 +123,9 @@ const Desenvolvedores = () => {
     try {
       await desenvolvedoresService.delete(desenvolvedor.id);
       showSuccess('Desenvolvedor excluído com sucesso!');
-      
+
       if (desenvolvedores.length === 1 && currentPage > 1) {
-        setCurrentPage(prev => prev - 1);
+        setCurrentPage((prev) => prev - 1);
       } else {
         await fetchDesenvolvedores(searchTerm);
       }
@@ -132,12 +133,22 @@ const Desenvolvedores = () => {
       console.error('Erro ao excluir desenvolvedor:', err);
       showError('Erro ao excluir desenvolvedor. Tente novamente.');
     } finally {
-      setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+      setConfirmDialog({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: null,
+      });
     }
   };
 
   const handleCloseConfirmDialog = () => {
-    setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+    setConfirmDialog({
+      isOpen: false,
+      title: '',
+      message: '',
+      onConfirm: null,
+    });
   };
 
   const handlePageChange = (page) => {
@@ -173,24 +184,46 @@ const Desenvolvedores = () => {
         <table className="table">
           <thead>
             <tr>
-              <th onClick={() => handleSort('id')} style={{cursor: 'pointer'}}>
+              <th
+                onClick={() => handleSort('id')}
+                style={{ cursor: 'pointer' }}
+              >
                 ID {sortField === 'id' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th onClick={() => handleSort('nome')} style={{cursor: 'pointer'}}>
+              <th
+                onClick={() => handleSort('nome')}
+                style={{ cursor: 'pointer' }}
+              >
                 Nome {sortField === 'nome' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th onClick={() => handleSort('sexo')} style={{cursor: 'pointer'}}>
+              <th
+                onClick={() => handleSort('sexo')}
+                style={{ cursor: 'pointer' }}
+              >
                 Sexo {sortField === 'sexo' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th onClick={() => handleSort('data_nascimento')} style={{cursor: 'pointer'}}>
-                Data Nascimento {sortField === 'data_nascimento' && (sortOrder === 'asc' ? '↑' : '↓')}
+              <th
+                onClick={() => handleSort('data_nascimento')}
+                style={{ cursor: 'pointer' }}
+              >
+                Data Nascimento{' '}
+                {sortField === 'data_nascimento' &&
+                  (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
               <th>Idade</th>
-              <th onClick={() => handleSort('hobby')} style={{cursor: 'pointer'}}>
-                Hobby {sortField === 'hobby' && (sortOrder === 'asc' ? '↑' : '↓')}
+              <th
+                onClick={() => handleSort('hobby')}
+                style={{ cursor: 'pointer' }}
+              >
+                Hobby{' '}
+                {sortField === 'hobby' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th onClick={() => handleSort('nivel')} style={{cursor: 'pointer'}}>
-                Nível {sortField === 'nivel' && (sortOrder === 'asc' ? '↑' : '↓')}
+              <th
+                onClick={() => handleSort('nivel')}
+                style={{ cursor: 'pointer' }}
+              >
+                Nível{' '}
+                {sortField === 'nivel' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
               <th>Ações</th>
             </tr>
@@ -198,28 +231,41 @@ const Desenvolvedores = () => {
           <tbody>
             {desenvolvedores.length === 0 ? (
               <tr>
-                <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>
-                  {searchTerm ? 'Nenhum desenvolvedor encontrado para sua busca' : 'Nenhum desenvolvedor cadastrado'}
+                <td
+                  colSpan="8"
+                  style={{ textAlign: 'center', padding: '2rem' }}
+                >
+                  {searchTerm
+                    ? 'Nenhum desenvolvedor encontrado para sua busca'
+                    : 'Nenhum desenvolvedor cadastrado'}
                 </td>
               </tr>
             ) : (
-              desenvolvedores.map(desenvolvedor => (
+              desenvolvedores.map((desenvolvedor) => (
                 <tr key={desenvolvedor.id}>
                   <td>{desenvolvedor.id}</td>
                   <td>{desenvolvedor.nome}</td>
-                  <td>{desenvolvedor.sexo === 'M' ? 'Masculino' : 'Feminino'}</td>
-                  <td>{new Date(desenvolvedor.data_nascimento).toLocaleDateString('pt-BR')}</td>
+                  <td>
+                    {desenvolvedor.sexo === 'M' ? 'Masculino' : 'Feminino'}
+                  </td>
+                  <td>
+                    {new Date(desenvolvedor.data_nascimento).toLocaleDateString(
+                      'pt-BR'
+                    )}
+                  </td>
                   <td>{calcularIdade(desenvolvedor.data_nascimento)} anos</td>
                   <td>{desenvolvedor.hobby}</td>
-                  <td>{desenvolvedor.nivel ? desenvolvedor.nivel.nivel : 'N/A'}</td>
                   <td>
-                    <button 
+                    {desenvolvedor.nivel ? desenvolvedor.nivel.nivel : 'N/A'}
+                  </td>
+                  <td>
+                    <button
                       className="btn btn-secondary btn-sm"
                       onClick={() => handleEditDesenvolvedor(desenvolvedor)}
                     >
                       Editar
                     </button>
-                    <button 
+                    <button
                       className="btn btn-danger btn-sm"
                       onClick={() => handleDeleteDesenvolvedor(desenvolvedor)}
                     >
@@ -233,7 +279,7 @@ const Desenvolvedores = () => {
         </table>
       </div>
 
-      <Pagination 
+      <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
@@ -243,7 +289,11 @@ const Desenvolvedores = () => {
       <Modal
         isOpen={modalOpen}
         onClose={handleCloseModal}
-        title={editingDesenvolvedor ? 'Editar Desenvolvedor' : 'Adicionar Desenvolvedor'}
+        title={
+          editingDesenvolvedor
+            ? 'Editar Desenvolvedor'
+            : 'Adicionar Desenvolvedor'
+        }
       >
         <DesenvolvedorForm
           desenvolvedor={editingDesenvolvedor}
@@ -275,11 +325,11 @@ const calcularIdade = (dataNascimento) => {
   const nascimento = new Date(dataNascimento);
   let idade = hoje.getFullYear() - nascimento.getFullYear();
   const mes = hoje.getMonth() - nascimento.getMonth();
-  
+
   if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
     idade--;
   }
-  
+
   return idade;
 };
 

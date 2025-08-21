@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import './SearchBar.scss';
 
-const SearchBar = ({ onSearch, placeholder = "Buscar...", disabled = false }) => {
+const SearchBar = ({
+  onSearch,
+  placeholder = 'Buscar...',
+  disabled = false,
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSubmit = (e) => {
@@ -39,11 +43,7 @@ const SearchBar = ({ onSearch, placeholder = "Buscar...", disabled = false }) =>
             ×
           </button>
         )}
-        <button
-          type="submit"
-          className="search-btn"
-          disabled={disabled}
-        >
+        <button type="submit" className="search-btn" disabled={disabled}>
           🔍
         </button>
       </div>
