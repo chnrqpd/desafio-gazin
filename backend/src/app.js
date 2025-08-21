@@ -22,12 +22,6 @@ app.get('/api-docs.json', (req, res) => {
   res.send(specs);
 });
 
-app.get('/health', (req, res) => {
-  res.json({
-    message: 'API Funcionando!',
-    timestamp: new Date().toISOString(),
-  });
-});
 app.use('/api/niveis', require('./routes/niveis'));
 app.use('/api/desenvolvedores', require('./routes/desenvolvedores'));
 app.use('/api/debug', require('./routes/debug'));
