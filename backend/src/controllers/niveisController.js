@@ -4,7 +4,13 @@ const niveisController = {
     async index(req, res) {
         try {
             const { page, limit, offset, search } = req.pagination || {};
-            
+            const { sort = 'id', order = 'ASC' } = req.query;
+            const allowedSortFields = ['id', 'nivel'];
+            const sortField = allowedSortFields.includes(sort) ? sort : 'id';
+            const sortOrder = order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+            const orderClause = [[sortField, sortOrder]];
+
             let result;
             
             if (page || limit || search) {
@@ -31,7 +37,7 @@ const niveisController = {
                 ]
                 },
                 group: ['Nivel.id'],
-                order: [['id', 'ASC']],
+                order: orderClause,
                 limit: limit || undefined,
                 offset: offset || 0,
                 subQuery: false
@@ -66,7 +72,7 @@ const niveisController = {
                 ]
                 },
                 group: ['Nivel.id'],
-                order: [['id', 'ASC']]
+                order: orderClause
             });
             
             res.json({
