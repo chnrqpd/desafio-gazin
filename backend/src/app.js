@@ -25,5 +25,6 @@ app.get('/api-docs.json', (req, res) => {
 app.use('/api/niveis', require('./routes/niveis'));
 app.use('/api/desenvolvedores', require('./routes/desenvolvedores'));
 app.use('/api/debug', require('./routes/debug'));
+app.use('/api/health', require('./routes/health'));
 
 module.exports = app;
