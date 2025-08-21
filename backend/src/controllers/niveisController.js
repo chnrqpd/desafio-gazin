@@ -3,51 +3,89 @@ const { Nivel, Desenvolvedor } = require('../../models');
 const niveisController = {
     async index(req, res) {
         try {
-            const { page, limit, offset } = req.pagination || {};
+            const { page, limit, offset, search } = req.pagination || {};
             
             let result;
-
-            if (page && limit) {
-                result = await Nivel.findAndCountAll({
-                    order: [['id', 'ASC']],
-                    limit,
-                    offset
-                });
-
-                const totalPages = Math.ceil(result.count / limit);
-
-                res.json({
-                    success: true,
-                    data: result.rows,
-                    meta: {
-                        total: result.count,
-                        per_page: limit,
-                        current_page: page,
-                        last_page: totalPages
-                    }
-                });
-            } else {
-                const niveis = await Nivel.findAll({
-                    order: [['id', 'ASC']]
-                });
-
-                res.json({
-                    success: true,
-                    data: niveis
-                });
+            
+            if (page || limit || search) {
+            const whereCondition = {};
+            if (search) {
+                whereCondition.nivel = {
+                [require('sequelize').Op.iLike]: `%${search}%`
+                };
             }
+            
+            result = await Nivel.findAndCountAll({
+                where: whereCondition,
+                include: [{
+                model: Desenvolvedor,
+                as: 'desenvolvedores',
+                attributes: []
+                }],
+                attributes: {
+                include: [
+                    [
+                    require('sequelize').fn('COUNT', require('sequelize').col('desenvolvedores.id')),
+                    'total_desenvolvedores'
+                    ]
+                ]
+                },
+                group: ['Nivel.id'],
+                order: [['id', 'ASC']],
+                limit: limit || undefined,
+                offset: offset || 0,
+                subQuery: false
+            });
+            
+            const count = Array.isArray(result.count) ? result.count.length : result.count;
+            const totalPages = limit ? Math.ceil(count / limit) : 1;
+            
+            res.json({
+                success: true,
+                data: result.rows,
+                meta: limit ? {
+                total: count,
+                per_page: limit,
+                current_page: page || 1,
+                last_page: totalPages
+                } : undefined
+            });
+            } else {
+            const niveis = await Nivel.findAll({
+                include: [{
+                model: Desenvolvedor,
+                as: 'desenvolvedores',
+                attributes: []
+                }],
+                attributes: {
+                include: [
+                    [
+                    require('sequelize').fn('COUNT', require('sequelize').col('desenvolvedores.id')),
+                    'total_desenvolvedores'
+                    ]
+                ]
+                },
+                group: ['Nivel.id'],
+                order: [['id', 'ASC']]
+            });
+            
+            res.json({
+                success: true,
+                data: niveis
+            });
+        }
         } catch (error) {
             console.error('Erro ao buscar níveis:', error);
             res.status(500).json({
-                success: false,
-                message: 'Erro interno do servidor'
+            success: false,
+            message: 'Erro interno do servidor'
             });
         }
     },
 
     async store(req, res) {
         try {
-            const { nivel } = req.body; // Já validado pelo middleware
+            const { nivel } = req.body; 
 
             const novoNivel = await Nivel.create({ nivel });
 
@@ -93,7 +131,7 @@ const niveisController = {
     async update(req, res) {
         try {
             const { id } = req.params;
-            const { nivel } = req.body; // Já validado pelo middleware
+            const { nivel } = req.body; 
             
             const nivelExistente = await Nivel.findByPk(id);
 

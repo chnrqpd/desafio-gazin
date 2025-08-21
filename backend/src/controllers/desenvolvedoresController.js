@@ -2,59 +2,70 @@ const { Desenvolvedor, Nivel } = require('../../models');
 
 const desenvolvedoresController = {
 
-  async index(req, res) {
-    try {
-        const { page, limit, offset } = req.pagination || {};
-        
-        let result;
-
-        if (page && limit) {
+    async index(req, res) {
+        try {
+            const { page, limit, offset, search } = req.pagination || {};
+            
+            let result;
+            
+            if (page || limit || search) {
+            // Construir condições de busca
+            const whereCondition = {};
+            if (search) {
+                whereCondition.nome = {
+                [require('sequelize').Op.iLike]: `%${search}%`
+                };
+            }
+            
+            // Com paginação/busca
             result = await Desenvolvedor.findAndCountAll({
+                where: whereCondition,
                 include: [{
-                    model: Nivel,
-                    as: 'nivel',
-                    attributes: ['id', 'nivel']
+                model: Nivel,
+                as: 'nivel',
+                attributes: ['id', 'nivel']
                 }],
                 order: [['id', 'ASC']],
-                limit,
-                offset
+                limit: limit || undefined,
+                offset: offset || 0
             });
-
-            const totalPages = Math.ceil(result.count / limit);
-
+            
+            const totalPages = limit ? Math.ceil(result.count / limit) : 1;
+            
             res.json({
                 success: true,
                 data: result.rows,
-                meta: {
-                    total: result.count,
-                    per_page: limit,
-                    current_page: page,
-                    last_page: totalPages
-                }
+                meta: limit ? {
+                total: result.count,
+                per_page: limit,
+                current_page: page || 1,
+                last_page: totalPages
+                } : undefined
             });
-        } else {
+            } else {
+            // Sem paginação/busca (backward compatibility)
             const desenvolvedores = await Desenvolvedor.findAll({
                 include: [{
-                    model: Nivel,
-                    ass: 'nivel',
-                    attributes: ['id', 'nivel']
+                model: Nivel,
+                as: 'nivel',
+                attributes: ['id', 'nivel']
                 }],
                 order: [['id', 'ASC']]
             });
-
+            
             res.json({
                 success: true,
                 data: desenvolvedores
             });
+            }
+        } catch (error) {
+            console.error('Erro ao buscar desenvolvedores:', error);
+            res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor'
+            });
         }
-    } catch (error) {
-      console.error('Erro ao buscar desenvolvedores:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Erro interno do servidor'
-      });
-    }
-  },
+    },
 
   async show(req, res) {
     try {
