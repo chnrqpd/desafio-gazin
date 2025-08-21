@@ -3,17 +3,17 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_DB: developers_db
-      POSTGRES_USER: dev_user
-      POSTGRES_PASSWORD: dev_password
+      POSTGRES_DB: gazin_db
+      POSTGRES_USER: gazin_user
+      POSTGRES_PASSWORD: gazin_pass
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dev_user -d developers_db"]
+      test: ['CMD-SHELL', 'pg_isready -U gazin_user -d gazin_db']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,7 +22,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -38,7 +38,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3001:3000"
+      - '3001:3000'
     volumes:
       - ./frontend:/app
       - /app/node_modules
