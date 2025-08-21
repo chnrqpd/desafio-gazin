@@ -9,7 +9,7 @@
     "dev": "nodemon server.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migratte:undo": "npx sequelize-cli db:migrate:undo",
-    "db:seed": "npx sequelize-clio db:seed:all",
+    "db:seed": "npx sequelize-cli db:seed:all",
     "db:seed:undo": "npx sequelize-cli db:seed:undo:all"
   },
   "keywords": [

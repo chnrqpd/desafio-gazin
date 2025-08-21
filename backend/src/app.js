@@ -13,7 +13,8 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Adicionar restante das rotas
+// Rotas da API
+app.use('/api/niveis', require('./routes/niveis'));
 
 
 module.exports = app;
