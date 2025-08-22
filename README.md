@@ -225,6 +225,49 @@ npm start            # Desenvolvimento
 npm run build        # Build para produção
 ```
 
+## 🛠️ Scripts Utilitários
+
+### Reset Completo do Ambiente
+
+Para testar uma instalação limpa do zero:
+
+**WSL/Linux/Mac:**
+
+```bash
+chmod +x scripts/reset-environment.sh
+./scripts/reset-environment.sh
+```
+
+**Windows:**
+
+```cmd
+scripts\reset-environment.bat
+```
+
+**Manual (qualquer sistema):**
+
+```bash
+docker-compose down -v && docker volume prune -f && docker image prune -a -f && docker-compose up --build -d && sleep 30 && docker-compose exec backend npm run db:migrate && docker-compose exec backend npm run db:seed
+```
+
+### Dados em Massa para Testes
+
+Para popular o banco com dados realistas (20 níveis + 100 desenvolvedores):
+
+```bash
+# Método 1: Via arquivo SQL
+docker-compose exec postgres psql -U gazin_user -d gazin_db -f /scripts/mass-data.sql
+
+# Método 2: Via pipe
+docker-compose exec -T postgres psql -U gazin_user -d gazin_db < scripts/mass-data.sql
+```
+
+**O que adiciona:**
+
+- 20 níveis diversos (Estagiário até CTO)
+- 100 desenvolvedores com dados realistas
+- Ideal para testar paginação, busca e ordenação
+
 ## 📊 Documentação da API
 
 ### Swagger/OpenAPI
