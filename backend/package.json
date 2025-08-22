@@ -4,13 +4,15 @@
   "description": "API para Gerenciamento de Desenvolvedores",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migratte:undo": "npx sequelize-cli db:migrate:undo",
     "db:seed": "npx sequelize-cli db:seed:all",
-    "db:seed:undo": "npx sequelize-cli db:seed:undo:all"
+    "db:seed:undo": "npx sequelize-cli db:seed:undo:all",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "api",
@@ -29,7 +31,9 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "jest": "^30.0.5",
     "nodemon": "^3.1.10",
-    "sequelize-cli": "^6.6.3"
+    "sequelize-cli": "^6.6.3",
+    "supertest": "^7.1.4"
   }
 }
