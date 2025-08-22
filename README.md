@@ -31,7 +31,14 @@ Este projeto consiste em uma aplicação full-stack para cadastro e gerenciament
 - Código otimizado seguindo boas práticas
 - Correção automática de páginas vazias
 - **Documentação Swagger/OpenAPI interativa**
+- **Suíte completa de testes backend (87 testes)**
 - Documentação completa de componentes e arquitetura
+
+#### 🔄 Nível 4 - DevOps
+
+- ✅ Containerização completa (Backend + Frontend + PostgreSQL)
+- ✅ Docker Compose para orquestração
+- ⏳ Deploy online (preparado mas não executado)
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -42,6 +49,7 @@ Este projeto consiste em uma aplicação full-stack para cadastro e gerenciament
 - **PostgreSQL** - Banco de dados relacional
 - **Sequelize** - ORM para JavaScript
 - **Docker** - Containerização
+- **Jest + Supertest** - Framework de testes
 
 ### Frontend
 
@@ -56,18 +64,70 @@ Este projeto consiste em uma aplicação full-stack para cadastro e gerenciament
 - **Prettier** - Formatação de código
 - **ESLint** - Análise de código
 
+## 🧪 Testes Backend
+
+Implementei uma suíte completa de 87 testes cobrindo toda a aplicação backend:
+
+- **Testes de integração** das rotas da API
+- **Testes unitários** dos controllers
+- **Testes unitários** dos middlewares
+- Configuração com Jest + Supertest + PostgreSQL
+- Cobertura completa de CRUD, paginação, validações e casos de erro
+
+### Estrutura dos Testes:
+
+```
+backend/src/__tests__/
+├── setup.js                    # Configuração global
+├── routes/
+│   ├── niveis.test.js         # 19 testes - integração níveis
+│   └── desenvolvedores.test.js # 16 testes - integração desenvolvedores
+├── controllers/
+│   ├── niveisController.test.js      # 12 testes - controller níveis
+│   └── desenvolvedoresController.test.js # 15 testes - controller desenvolvedores
+└── middlewares/
+    └── middlewares.test.js     # 25 testes - validação e paginação
+```
+
+### Executar Testes:
+
+```bash
+# Todos os testes
+docker-compose exec backend npm test
+
+# Testes específicos
+docker-compose exec backend npm test -- src/__tests__/routes/
+docker-compose exec backend npm test -- src/__tests__/controllers/
+docker-compose exec backend npm test -- src/__tests__/middlewares/
+
+# Relatório de cobertura
+docker-compose exec backend npm run test:coverage
+
+# Modo watch (desenvolvimento)
+docker-compose exec backend npm run test:watch
+```
+
 ## 📁 Estrutura do Projeto
 
 ```
 desafio-gazin/
 ├── backend/
 │   ├── src/
+│   │   ├── __tests__/
+│   │   │   ├── setup.js
+│   │   │   ├── routes/
+│   │   │   ├── controllers/
+│   │   │   └── middlewares/
 │   │   ├── controllers/
-│   │   ├── models/
+│   │   ├── middlewares/
 │   │   ├── routes/
-│   │   ├── services/
-│   │   └── config/
+│   │   └── app.js
+│   ├── models/
+│   ├── migrations/
+│   ├── seeders/
+│   ├── config/
 │   ├── Dockerfile
+│   ├── jest.config.js
 │   └── package.json
 ├── frontend/
 │   ├── src/
@@ -114,8 +174,7 @@ cd desafio-gazin
 ```bash
 docker-compose up --build
 
-Após subir os containers, execute uma única vez:
-
+# Após subir os containers, execute uma única vez:
 docker-compose exec backend npm run db:migrate
 docker-compose exec backend npm run db:seed
 ```
@@ -145,6 +204,27 @@ npm install
 npm start
 ```
 
+### Scripts Disponíveis
+
+**Backend:**
+
+```bash
+npm start             # Produção
+npm run dev          # Desenvolvimento com nodemon
+npm test             # Executar todos os testes
+npm run test:watch   # Testes em modo watch
+npm run test:coverage # Relatório de cobertura
+npm run db:migrate   # Executar migrations
+npm run db:seed      # Executar seeders
+```
+
+**Frontend:**
+
+```bash
+npm start            # Desenvolvimento
+npm run build        # Build para produção
+```
+
 ## 📊 Documentação da API
 
 ### Swagger/OpenAPI
@@ -163,24 +243,24 @@ A API possui documentação interativa completa usando Swagger/OpenAPI 3.0:
 
 ### Endpoints da API
 
-### Desenvolvedores
+#### Desenvolvedores
 
 ```
-GET    /desenvolvedores     - Lista desenvolvedores (com paginação)
-POST   /desenvolvedores     - Cria desenvolvedor
-GET    /desenvolvedores/:id - Busca desenvolvedor por ID
-PUT    /desenvolvedores/:id - Atualiza desenvolvedor
-DELETE /desenvolvedores/:id - Remove desenvolvedor
+GET    /api/desenvolvedores     - Lista desenvolvedores (com paginação)
+POST   /api/desenvolvedores     - Cria desenvolvedor
+GET    /api/desenvolvedores/:id - Busca desenvolvedor por ID
+PUT    /api/desenvolvedores/:id - Atualiza desenvolvedor
+DELETE /api/desenvolvedores/:id - Remove desenvolvedor
 ```
 
-### Níveis
+#### Níveis
 
 ```
-GET    /niveis     - Lista níveis (com paginação)
-POST   /niveis     - Cria nível
-GET    /niveis/:id - Busca nível por ID
-PUT    /niveis/:id - Atualiza nível
-DELETE /niveis/:id - Remove nível
+GET    /api/niveis     - Lista níveis (com paginação)
+POST   /api/niveis     - Cria nível
+GET    /api/niveis/:id - Busca nível por ID
+PUT    /api/niveis/:id - Atualiza nível
+DELETE /api/niveis/:id - Remove nível
 ```
 
 ### Parâmetros de Paginação
@@ -193,6 +273,7 @@ DELETE /niveis/:id - Remove nível
 
 ```json
 {
+  "success": true,
   "data": [...],
   "meta": {
     "total": 100,
@@ -297,11 +378,12 @@ const {
 
 ### Estratégia de Desenvolvimento
 
-Seguindo a filosofia "um passo de cada vez", o projeto foi desenvolvido incrementalmente:
+Segui a filosofia "um passo de cada vez", desenvolvendo o projeto incrementalmente:
 
 1. **Primeiro**: Funcionalidades básicas funcionando corretamente
 2. **Segundo**: Melhorias de UX e funcionalidades avançadas
 3. **Terceiro**: Refatoração e otimização de código
+4. **Quarto**: Implementação de testes abrangentes
 
 ### Decisões Arquiteturais
 
@@ -322,6 +404,12 @@ Seguindo a filosofia "um passo de cada vez", o projeto foi desenvolvido incremen
 - **Escolha**: Organização com variáveis globais e mixins
 - **Benefício**: Manutenibilidade e consistência visual
 - **Padrão**: Arquivos modulares por componente
+
+#### Por que Jest + Supertest?
+
+- **Escolha**: Stack padrão para testes em Node.js
+- **Benefício**: Testes de integração e unitários robustos
+- **Cobertura**: 87 testes cobrindo toda a aplicação backend
 
 ### Correções e Melhorias Implementadas
 
@@ -345,6 +433,7 @@ Antes de cada entrega, todo o projeto foi testado:
 - Funcionalidades em diferentes cenários
 - Responsividade em mobile/desktop
 - Estados de loading e error
+- Suíte automatizada de 87 testes backend
 
 ## 📝 Notas Técnicas
 
@@ -354,7 +443,9 @@ Antes de cada entrega, todo o projeto foi testado:
 -- Estrutura das tabelas
 CREATE TABLE niveis (
   id SERIAL PRIMARY KEY,
-  nivel VARCHAR(255) NOT NULL
+  nivel VARCHAR(255) NOT NULL,
+  createdAt TIMESTAMP WITH TIME ZONE NOT NULL,
+  updatedAt TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE desenvolvedores (
@@ -363,7 +454,9 @@ CREATE TABLE desenvolvedores (
   nome VARCHAR(255) NOT NULL,
   sexo CHAR(1) NOT NULL,
   data_nascimento DATE NOT NULL,
-  hobby VARCHAR(255) NOT NULL
+  hobby VARCHAR(255),
+  createdAt TIMESTAMP WITH TIME ZONE NOT NULL,
+  updatedAt TIMESTAMP WITH TIME ZONE NOT NULL
 );
 ```
 
@@ -375,6 +468,8 @@ DB_PORT=5432
 DB_NAME=gazin_db
 DB_USER=gazin_user
 DB_PASS=gazin_pass
+NODE_ENV=development
+PORT=3000
 ```
 
 ## 🤝 Contribuição
@@ -387,4 +482,11 @@ Desenvolvido por Caio Henrique Primo Dario como parte do processo seletivo da Ga
 
 ---
 
-**Status:** ✅ Concluído - Todos os níveis implementados com melhorias adicionais
+**Status:** ✅ **95% Concluído**
+
+- **Nível 1:** ✅ 100% (8/8)
+- **Nível 2:** ✅ 100% (11/11)
+- **Nível 3:** ✅ 100% (7/7) - Incluindo testes unitários completos
+- **Nível 4:** 🔄 75% (3/4) - Docker completo, falta deploy online
+
+**Destaques:** 87 testes backend implementados, documentação Swagger completa, arquitetura robusta com componentes reutilizáveis e hooks customizados.
