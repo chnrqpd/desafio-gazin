@@ -255,11 +255,11 @@ docker-compose down -v && docker volume prune -f && docker image prune -a -f && 
 Para popular o banco com dados realistas (20 níveis + 100 desenvolvedores):
 
 ```bash
-# Método 1: Via arquivo SQL
-docker-compose exec postgres psql -U gazin_user -d gazin_db -f /scripts/mass-data.sql
+# Método recomendado (funciona em todos os sistemas)
+docker-compose exec -T postgres psql -U gazin_user -d gazin_db < scripts/mass_data.sql
 
-# Método 2: Via pipe
-docker-compose exec -T postgres psql -U gazin_user -d gazin_db < scripts/mass-data.sql
+# Método alternativo (Linux/Mac)
+docker-compose exec postgres psql -U gazin_user -d gazin_db -f /scripts/mass_data.sql
 ```
 
 **O que adiciona:**
