@@ -510,7 +510,7 @@ DB_HOST=postgres
 DB_PORT=5432
 DB_NAME=gazin_db
 DB_USER=gazin_user
-DB_PASS=gazin_pass
+DB_PASSWORD=gazin_pass
 NODE_ENV=development
 PORT=3000
 ```
